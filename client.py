@@ -1,3 +1,4 @@
+from ast import Dict
 import linecache
 import pickle
 import socket
@@ -28,7 +29,7 @@ def send(msg):
 Zalogowano = False    
 connected = True
 while connected:
-    print("Witaj w swoim Banku \n 1) Zarejestruj się \n 2) Zaloguj się \n 0) wyłącz aplikację")
+    print("Witaj w Banku BartBNK \n 1) Zarejestruj się \n 2) Zaloguj się \n 0) wyłącz aplikację")
 
     msgIndex = input(">>> ")
     send(msgIndex)
@@ -51,10 +52,7 @@ while connected:
 
         print("Możesz się teraz zalogować!: ")
         
-        f = open(f"konta\{msgLogin1}.pkl", "rb")
-        output = pickle.load(f)
-        f.close()
-        print(output)
+        
         
         
 
@@ -66,34 +64,70 @@ while connected:
         send(msgHaslo)
 
         
-    
-        linia =  linecache.getline(f"{msgLogin}.txt",2)
-        if f"{msgHaslo}" in linia.split():
-            Zalogowano = True
-     
-            print(f"witaj na swoim koncie: {msgLogin}\n")
-        else:
-            print("Złe hasło")
-        while Zalogowano:  
+        f = open(f"konta\{msgLogin}.pkl", "rb")
+        output = pickle.load(f)
+        f.close()
+        #print(type(output["Haslo"]))
+        outputStr = " ".join(output["Haslo"])
+        #print(type(outputStr))
 
-                print(" 1) Wpłać środki\n 2) Sprawdź dostępne saldo\n 0) Wyloguj")
-            
-                msgSaldo = input(">> ")
-            
-                send(msgSaldo)
-                if msgSaldo == "1":
-                    
-                    msgWprSaldo = input("Wprowadź kwote do wpłaty >>")
-                    send(msgWprSaldo)
-
-                elif msgSaldo == "2":
-                    print("")
-                    
                 
+        if outputStr == msgHaslo:
+            Zalogowano = True
+            print(f"Witaj na swoim koncie: {msgLogin}")
+        elif output != msgHaslo:
+            Zalogowano = False
+            print("============================")
+            print("Złe hasło zaloguj ponownie")
+            print("============================")
 
-                elif msgSaldo == "0":
-                    print("Wyloguj")
-                    Zalogowano = False
+    while Zalogowano:
+
+            print(" 1) Wpłać pierwsze środki\n 2) Sprawdź dostępne saldo\n 3) Wypłać środki \n 0) Wyloguj")
+            
+            msgSaldo = input(">> ")
+            
+            send(msgSaldo)
+            if msgSaldo == "1":
+                    
+                msgWprSaldo = input("Wprowadź kwote do wpłaty >>")
+                send(msgWprSaldo)
+
+
+
+            elif msgSaldo == "2":
+                f = open(f"konta\{msgLogin}.pkl", "rb")
+                output = pickle.load(f)
+                f.close()
+                print("Twoje dostępne środki: ")
+                print("============")
+                print(output["Saldo"].pop())
+                print("============")
+                
+            #elif msgSaldo == "3":
+             #   print("Twoje dostępne środki z których możesz wypłacić to: ")
+            #    f = open(f"konta\{msgLogin}.pkl", "rb")
+             #   output = pickle.load(f)
+             #   f.close()
+             #   print("============")
+              #  print(output["Saldo"].pop())
+              #  print("============")
+
+              #  msgWypSaldo = input("Wprowadź kwote do wypłaty >>")
+               # send(msgWypSaldo)
+
+               # f = open(f"konta\{msgLogin}.pkl", "rb")
+               # output = pickle.load(f)
+               # f.close()
+               # print("============")
+               # print(output["Saldo"].pop()-msgWypSaldo)
+               # print("============")
+
+              
+
+            elif msgSaldo == "0":
+                print("Wyloguj")
+                Zalogowano = False
 
     
         
